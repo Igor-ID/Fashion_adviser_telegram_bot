@@ -8,11 +8,12 @@ import nltk
 nltk.download('nps_chat')
 nltk.download('punkt')
 
-
-df = pd.read_pickle('convai_dataset_embeddings.pkl')
-
+data = "./fashion_dataset_embeddings.pkl"
+df = pd.read_pickle(data)
+# Use pretrained simCSE model
 tokenizer = AutoTokenizer.from_pretrained("princeton-nlp/sup-simcse-roberta-large")
 model = AutoModel.from_pretrained("princeton-nlp/sup-simcse-roberta-large")
+
 
 def get_input(txt):
     res_list = txt.split(';')
@@ -21,7 +22,7 @@ def get_input(txt):
     return res_list, intention
 
 
-def embd(list_input):
+def embed(list_input):
     inputs = tokenizer(list_input, padding=True, truncation=True, return_tensors="pt")
     with torch.no_grad():
         embeddings = model(**inputs, output_hidden_states=True, return_dict=True).pooler_output
@@ -30,33 +31,30 @@ def embd(list_input):
 
 def fashion_advisor(txt):
     items, intention = get_input(txt)
-    query_embd = embd(items)
-    weights = []
+    query_embed = embed(items)
     rows = []
     embeddings = df['embeddings']
     for i in range(len(embeddings)):
-        sim = 1 - cdist(query_embd, embeddings[i], 'cosine')
+        sim = 1 - cdist(query_embed, embeddings[i], 'cosine')
         sim_check = np.any((sim > 0.65), axis=1)
         if sim_check.all():
             rows.append(i)
-            score = np.mean(np.max(sim, axis=1))
-            weights.append(score)
-    result_score = np.mean(weights)
-    # depending on the intention we have two scenarios
+    # There are two scenarios depending on user intent
     # First
     if intention == 'advice':
+        # Empirically derived coefficient for obtaining ranks
         helper_coef = len(embeddings) / 33 / (len(items) / 2)
         occur = len(rows)
         if occur >= helper_coef:
             return 'Top-ranked 5 star combination!'
         elif helper_coef*0.5 < occur < helper_coef:
-            return '4 star combination'
+            return '4 star combination.'
         elif helper_coef*0.1 < occur <= helper_coef*0.5:
-            return '3 star combination'
+            return '3 star combination.'
         elif helper_coef*0.05 < occur <= helper_coef*0.1:
-            return '2 star combination'
+            return '2 star combination.'
         else:
-            return '1 star combination'
+            return '1 star combination.'
 
     # Second
     elif intention == 'match':
@@ -64,11 +62,10 @@ def fashion_advisor(txt):
         res = pd.Series(' '.join(upd_df).split(';')).value_counts()
         fin_res = res[res > 2]  # remove single occurrences
         n_items = len(items)
-        fin_res = fin_res[n_items:]  # remove first n items
-        fin_res.reset_index()
+        fin_res = fin_res[n_items:]  # remove items that match the items the user provided
         rating = int(len(fin_res)/3)
-        if rating < 3:
-            return 'There is nothing to wear with such items :)'
+        if rating < 5:
+            return 'There is nothing to add to these items. Please try something different.'
         num_top = random.sample(range(0, rating), 5)
         num_medium = random.sample(range(rating, rating*2), 5)
         num_low = random.sample(range(rating*2, rating*3), 5)
@@ -76,11 +73,7 @@ def fashion_advisor(txt):
         top_ranked = res_div['occurrences'].iloc[num_top].to_list()
         mainstream = res_div['occurrences'].iloc[num_medium].to_list()
         unpopular = res_div['occurrences'].iloc[num_low].to_list()
-        return f"Fashion advisor suggests the following options: 1. Top ranked items: {';'.join(top_ranked)}; \
-        2. Mainstream items: {';'.join(mainstream)}; 3. Unpopular items: {';'.join(unpopular)}"
+        return f"Fashion adviser suggests the following options: 1. Top ranked items: {';'.join(top_ranked)}; " \
+               f"2. Mainstream items: {';'.join(mainstream)}; 3. Unpopular items: {';'.join(unpopular)}"
     else:
-        return 'Please follow the instructions when submitting a request'
-
-
-# res = fashion_advisor('yellow shirt; white boots; match')
-# print(res)
+        return 'Please type /help for instructions. Please follow the instructions when submitting a request.'
