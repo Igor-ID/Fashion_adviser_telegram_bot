@@ -6,7 +6,8 @@ This telegram bot is designed to respond to a user query based on information ob
 
 ## Implementation
 For the current implementation, [the Polyvore dataset (2017)](https://github.com/xthan/polyvore-dataset) containing images of 33,375 outfits was selected. The garments with their attributes were extracted from the dataset using a pre-trained VinVL model from [Scene Graph Benchmark](https://github.com/microsoft/scene_graph_benchmark).
-The core of the project based on embeddings - numerical representations of real-world objects and relationships, expressed as a vector. The embeddings have been added to the initial dataset using [SimCSE: Simple Contrastive Learning of Sentence Embeddings](https://github.com/princeton-nlp/SimCSE). The implementation, along with the initial dataset obtained using VinVL can be found in the [preprocessing folder](https://github.com/Igor-ID/Fashion_adviser_telegram_bot/tree/main/preprocessing)
+
+The core of the project is based on embeddings - numerical representations of real-world objects and relationships, expressed as a vector. The embeddings have been added to the initial dataset using [SimCSE: Simple Contrastive Learning of Sentence Embeddings](https://github.com/princeton-nlp/SimCSE). The implementation, along with the initial dataset obtained using VinVL can be found in the [preprocessing folder](https://github.com/Igor-ID/Fashion_adviser_telegram_bot/tree/main/preprocessing)
 
 ## Instructions
 :whale: `Docker 20.10+` and `Docker Desktop 4.0+` are required. A container is used to manage other requirements.
@@ -49,7 +50,7 @@ For all the above cases you have to create your own telegram bot and have your o
 
 
 
-Add the token to docker environmental variables if using Docker Desktop or add the token to environmental variables on your machine if running locally.
+Add the token to docker environment variables if using Docker Desktop, or add the token to environment variables on your machine if running locally.
 
 ![Screenshot 2022-07-11 220602](https://user-images.githubusercontent.com/69838126/178476694-07322a04-b16f-45d4-b727-4a78935739cd.png)
 
