@@ -40,10 +40,10 @@ The Docker image can be pushed to [docker hub](https://hub.docker.com/) with the
 <DOCKER_ID> - for Docker ID you have to have a [docker hub](https://hub.docker.com/) account
 
 For all the above cases you have to create your own telegram bot and have your own TOKEN.
-1. Start a chat with (https://telegram.me/BotFather)
+1. Start a chat with [BotFather](https://telegram.me/BotFather)
 2. Send the message `/newbot`
-3. Choose the public name of your bot
-4. Choose the name id of your bot (It must end in `bot`. Like this, for example: FashionBot or fashion_bot.)
+3. Choose the public name for your bot
+4. Choose the name id for your bot (It must end in `bot`. For example: FashionBot or fashion_bot.)
 5. Father bot will return you the token (API key)
 
 ![image](https://user-images.githubusercontent.com/69838126/178476183-02d8b901-d80b-42ed-8475-5dc3289173e7.png)
